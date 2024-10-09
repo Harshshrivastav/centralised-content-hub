@@ -1,0 +1,177 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function admin_content_dashboard_schema() {
+  // Schema for the 'synchronisation_queue' table.
+  $schema['synchronisation_queue'] = [
+    'description' => 'Table to store queued synchronisation data',
+    'fields' => [
+      'qid' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary identifier for each queue item',
+      ],
+      'nid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Node ID of the content',
+      ],
+      'remote_site' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Remote site name.',
+      ],
+      'operation' => [
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => 'Operation (create, delete)',
+      ],
+      'title' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Title of the content being synchronized',
+      ],
+      'language' => [
+        'type' => 'varchar',
+        'length' => 12,
+        'not null' => FALSE,
+        'description' => 'Language code of the content',
+      ],
+      'entity_type' => [
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => 'Type of the entity (e.g., node, taxonomy_term)',
+      ],
+      'status' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Status (awaiting, processed, failed)',
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Timestamp of when the queue item was created',
+      ],
+    ],
+    'primary key' => ['qid'],
+  ];
+
+  // Schema for the 'relation_of_synchronisation' table.
+  $schema['relation_of_synchronisation'] = [
+    'description' => 'Table to store the relationship between local and remote synchronised content',
+    'fields' => [
+      'rid' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary identifier for each relation entry',
+      ],
+      'nid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Local Node ID of the content',
+      ],
+      'title' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Title of the content',
+      ],
+      'language' => [
+        'type' => 'varchar',
+        'length' => 12,
+        'not null' => TRUE,
+        'description' => 'Language code of the content',
+      ],
+      'remote_nid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Remote Node ID of the content',
+      ],
+      'entity_type' => [
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => FALSE,
+        'description' => 'Entity type of the content (e.g., node, taxonomy_term)',
+      ],
+      'content_type' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Content type (e.g., article, page)',
+      ],
+      'remote_site' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Name of the remote site',
+      ],
+      'operation_date' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Timestamp of when the operation occurred on the source system',
+      ],
+    ],
+    'primary key' => ['rid'],
+  ];
+
+  // Schema for the 'queue_logs' table.
+  $schema['queue_logs'] = [
+    'description' => 'Table to store logs related to the synchronization queue.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary identifier for each log entry',
+      ],
+      'qid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Queue ID the log entry is associated with',
+      ],
+      'log_message' => [
+        'type' => 'text',
+        'not null' => TRUE,
+        'description' => 'The log message',
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Timestamp when the log entry was created',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'qid' => ['qid'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function admin_content_dashboard_install() {
+  // Create the tables during module installation.
+  $schema = admin_content_dashboard_schema();
+  \Drupal::database()->schema()->createTable('synchronisation_queue', $schema['synchronisation_queue']);
+  \Drupal::database()->schema()->createTable('relation_of_synchronisation', $schema['relation_of_synchronisation']);
+  \Drupal::database()->schema()->createTable('queue_logs', $schema['queue_logs']);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function admin_content_dashboard_uninstall() {
+  // Drop the tables during module uninstallation.
+  \Drupal::database()->schema()->dropTable('synchronisation_queue');
+  \Drupal::database()->schema()->dropTable('relation_of_synchronisation');
+  \Drupal::database()->schema()->dropTable('queue_logs');
+}

@@ -1,0 +1,8 @@
+name: 'Content Moderation Menu'
+type: module
+description: 'Provides moderation states for Drupal core menu.'
+core_version_requirement: ^10 || ^9
+package: 'Content Moderation'
+dependencies:
+  - drupal:workflows
+  - drupal:content_moderation

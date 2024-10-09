@@ -1,0 +1,125 @@
+<?php
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Link;
+use Drupal\workflows\Entity\Workflow;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_help().
+ */
+function content_moderation_menu_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.content_moderation_menu':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The Content Moderation Menu module allows you to expand on Drupal\'s Content Moderation for Menus. It allows you to have states for menu items. This is achieved by using <a href=":workflows">Workflows</a> to apply different states and transitions to entities as needed and the <a href=":content_moderation">Content Moderation module</a>.', [
+        ':content_moderation' => Link::fromTextAndUrl('Content Moderation module', Url::fromUri('https://www.drupal.org/documentation/modules/content_moderation'))->toString(),
+        ':workflows' => Link::fromTextAndUrl('Workflows', Url::fromRoute('help.page', ['name' => 'workflows']))->toString(),
+      ]) . '</p>';
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Applying workflows to menu items') . '</dt>';
+      $output .= '<dd>' . t('Content Moderation Menu allows you to apply <a href=":workflows">Workflows</a> to Menu Items.', [
+        ':workflows' => Link::fromTextAndUrl('Workflows', Url::fromRoute('help.page', ['name' => 'workflows']))->toString(),
+      ]) . '</dd>';
+      $output .= '</dl>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function content_moderation_menu_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'menu_link_content') {
+    $fields['workflow_state'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Workflow State'))
+      ->setDescription(t('Menu Item Workflow State'))
+      ->setRequired(FALSE)
+      ->setSetting('max_length', 255)
+      ->setDefaultValue('Draft');
+  }
+  return $fields;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function content_moderation_menu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (in_array($form_id, ['menu_edit_form', 'menu_link_content_menu_link_content_form'])) {
+    // Load the workflow states.
+    $state_labels = $state_labels_user = [];
+    foreach (Workflow::loadMultipleByType('content_moderation') as $workflow) {
+      foreach ($workflow->getTypePlugin()->getTransitions() as $transition) {
+        if (\Drupal::currentUser()->hasPermission('use ' . $workflow->id() . ' transition ' . $transition->id())) {
+          $state_labels_user[$transition->to()->id()] = $transition->to()->label();
+        }
+        $state_labels[$transition->to()->id()] = $transition->to()->label();
+      }
+    }
+    if (empty($state_labels)) {
+      return;
+    }
+
+    if ($form_id == 'menu_edit_form') {
+      if (isset($form["links"]["links"]["#header"])) {
+        $form["links"]["links"]["#header"][1] = t('State');
+      }
+      if (isset($form["links"]["links"])) {
+        foreach ($form["links"]["links"] as $k => $v) {
+          if (strpos($k, 'menu_plugin_id') !== FALSE) {
+            $link = (array) $form["links"]["links"][$k]["#item"]->link;
+           // $state_info = $link["\0*\0entity"]->get('workflow_state')->value ?? 'NULL';
+            $state_label = !empty($state_info) ? $state_labels[$state_info] : '-';
+            $form["links"]["links"][$k]["enabled"] = [
+              '#type' => 'item',
+              '#title' => $state_label,
+            ];
+          }
+        }
+      }
+    }
+    elseif ($form_id == 'menu_link_content_menu_link_content_form') {
+      $form["enabled"]['#disabled'] = TRUE;
+
+      $state_info = $form_state->getFormObject()->getEntity()->get('workflow_state')->value;
+      $default_value_display = $state_labels[$state_info] ?? t('None');
+
+      $form['current_workstate_menu'] = [
+        '#type' => 'item',
+        '#title' => t('Current state'),
+        '#markup' => $default_value_display,
+        '#wrapper_attributes' => ['class' => ['container-inline']],
+        '#weight' => 20,
+      ];
+
+      $form['workstate_menu'] = [
+        '#type' => 'select',
+        '#title' => t('Change to'),
+        '#options' => $state_labels_user,
+        '#default_value' => $state_info,
+        '#access' => !empty($state_labels_user),
+        '#wrapper_attributes' => ['class' => ['container-inline']],
+        '#weight' => 21,
+      ];
+
+      $form['actions']['submit']['#submit'][] = 'content_moderation_menu_form_submit';
+    }
+  }
+}
+
+/**
+ * Implements hook_form_submit().
+ */
+function content_moderation_menu_form_submit(array $form, FormStateInterface $form_state) {
+  $current_state = $form_state->getValue('workstate_menu');
+  $entity = $form_state->getFormObject()->getEntity();
+  
+  $entity->set('enabled', ['value' => in_array($current_state, ['publish', 'published'])]);
+  $entity->set('workflow_state', $current_state);
+  $entity->save();
+}

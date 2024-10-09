@@ -1,0 +1,8 @@
+rest.resource.receive_content_resource:
+  plugin_id: 'receive_content_resource'
+  granularity: 'resource'
+  configuration:
+    methods: ['POST']
+  dependencies:
+    module:
+      - remote_receiver_endpoint

@@ -1,0 +1,189 @@
+<?php
+use Drupal\Core\Database\Database;
+use Drupal\admin_content_dashboard\Controller\MediaSyncController;
+use Drupal\admin_content_dashboard\Controller\TaxonomySyncController;
+use Drupal\admin_content_dashboard\Controller\MenuSyncController;
+use Drupal\admin_content_dashboard\Controller\ContentListController;
+use Drupal\file\Entity\File;
+use Drupal\media\Entity\Media;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
+/**
+ * Implements hook_cron().
+ *
+ * Processes the synchronisation queue and syncs with remote sites.
+ */
+function admin_content_dashboard_cron() {
+  // Fetch all items in the synchronization queue with 'awaiting' status.
+  $query = Database::getConnection()->select('synchronisation_queue', 'sq')
+    ->fields('sq', ['qid', 'nid', 'remote_site', 'operation', 'entity_type'])
+    ->condition('status', 'awaiting');
+  $queue_items = $query->execute()->fetchAll();
+
+  if (!empty($queue_items)) {
+    foreach ($queue_items as $item) {
+      // Load the synchronization configuration.
+      $config = \Drupal::config('config_sync.settings');
+      $remote_sites = $config->get('remote_sites') ?? [];
+
+      // Find the matching remote site details.
+      $site_details = array_filter($remote_sites, function ($site) use ($item) {
+        return $site['site_name'] === $item->remote_site;
+      });
+
+      if (!empty($site_details)) {
+        // Prepare the data to send.
+        $site_details = reset($site_details);
+        $url = $site_details['url'];
+        $username = $site_details['username'];
+        $password = $site_details['password'];
+
+        // Create a config factory instance.
+        $container = \Drupal::getContainer();
+        $configFactory = $container->get('config.factory');
+
+        // Handle different entity types.
+        switch ($item->entity_type) {
+          case 'media':
+            $controller = new MediaSyncController($configFactory);
+            $media = Media::load($item->nid);
+            if ($media) {
+              $bundle = $media->bundle();
+              $field_name = match ($bundle) {
+                'image' => 'field_media_image',
+                'audio' => 'field_media_audio_file',
+                'video' => 'field_media_video_file',
+                'remote_video' => 'field_media_oembed_video',
+                'document' => 'field_media_document',
+                default => null,
+              };
+
+              if ($field_name) {
+                $media_data = [];
+                if ($bundle === 'remote_video') {
+                  $media_data = [
+                    'type' => 'remote_video',
+                    'url' => $media->get($field_name)->getString(),
+                  ];
+                } else {
+                  $file = $media->get($field_name)->entity;
+                  if ($file instanceof File) {
+                    $file_uri = $file->getFileUri();
+                    $file_url = \Drupal::service('file_url_generator')->generateAbsoluteString($file_uri);
+                    $file_contents = file_get_contents($file_url);
+                    $filename = $file->getFilename();
+                    $media_data = [
+                      'type' => $bundle,
+                      'file' => [
+                        'contents' => $file_contents,
+                        'filename' => $filename,
+                      ],
+                    ];
+                  }
+                }
+
+                // Send POST request for media synchronization.
+                $response = $controller->sendPostRequest($url, $media_data, $username, $password, $item->nid, $item->remote_site);
+                update_synchronization_status($response, $item);
+              }
+            }
+            break;
+
+          case 'taxonomy_term':
+            // Synchronize taxonomy term.
+            $controller = new TaxonomySyncController($configFactory);
+            $term = Database::getConnection()->select('taxonomy_term_field_data', 'ttd')
+              ->fields('ttd', ['tid', 'name', 'vid'])
+              ->condition('tid', $item->nid)
+              ->execute()
+              ->fetchObject();
+
+            if ($term) {
+              $data = [
+                'tid' => $term->tid,
+                'name' => $term->name,
+                'vid' => $term->vid,
+              ];
+
+              // Send POST request for taxonomy synchronization.
+              $response = $controller->sendPostRequest($url, $data, $username, $password, $term->tid, $item->remote_site);
+              if ($response['success']) {
+                Database::getConnection()->delete('synchronisation_queue')
+                  ->condition('qid', $item->qid)
+                  ->execute();
+              } else {
+                Database::getConnection()->update('synchronisation_queue')
+                  ->fields(['status' => 'failed'])
+                  ->condition('qid', $item->qid)
+                  ->execute();
+              }
+            }
+            break;
+
+          case 'menu':
+            // Synchronize menu link.
+            $controller = new MenuSyncController($configFactory);
+            $menu_link = Database::getConnection()->select('menu_link_content_data', 'mlc')
+              ->fields('mlc', ['id', 'title', 'bundle', 'menu_name', 'link__uri'])
+              ->condition('id', $item->nid)
+              ->execute()
+              ->fetchObject();
+
+            if ($menu_link) {
+              $data = [
+                'id' => $menu_link->id,
+                'title' => $menu_link->title,
+                'bundle' => $menu_link->bundle,
+                'menu_name' => $menu_link->menu_name,
+                'link_uri' => $menu_link->link__uri,
+              ];
+
+              // Send POST request for menu synchronization.
+              $response = $controller->sendPostRequest($url, $data, $username, $password, $item->nid, $item->remote_site);
+              update_synchronization_status($response, $item);
+            }
+            break;
+
+          case 'content':
+            // Synchronize content node.
+            $controller = new ContentListController($configFactory);
+            $node = \Drupal\node\Entity\Node::load($item->nid);
+
+            if ($node) {
+              $data = [
+                'content' => [
+                  'title' => $node->getTitle(),
+                  'body' => $node->get('body')->value,
+                  'nid' => $node->id(),
+                  'content_type' => $node->getType(),
+                ],
+              ];
+
+              // Send POST request for content synchronization.
+              $response = $controller->sendPostRequest($url, $data, $username, $password, $item->nid, $item->remote_site);
+              update_synchronization_status($response, $item);
+            }
+            break;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Updates the synchronization queue based on the response.
+ */
+function update_synchronization_status($response, $item) {
+  if ($response instanceof RedirectResponse || (is_array($response) && isset($response['success']) && $response['success'])) {
+    // Successful synchronization, delete the queue item.
+    Database::getConnection()->delete('synchronisation_queue')
+      ->condition('qid', $item->qid)
+      ->execute();
+  } else {
+    // Failed synchronization, update the status to failed.
+    Database::getConnection()->update('synchronisation_queue')
+      ->fields(['status' => 'failed'])
+      ->condition('qid', $item->qid)
+      ->execute();
+  }
+}

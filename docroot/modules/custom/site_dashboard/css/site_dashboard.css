@@ -1,0 +1,239 @@
+#block-centralisedcms-content{
+  display: flex;
+  gap: 20px;
+  border-radius: 10px;
+  background-color: #a3a9fc;
+  margin-top: 50px;
+  justify-content: center;
+  padding : 20px;
+}
+
+.site-dashboard-container {
+  display: flex;
+  align-items: center; /* Aligns items vertically centered */
+  justify-content: space-between; /* Adjusts spacing between items */
+}
+
+.ccms-site-name-list{
+  display: flex;
+  margin: 0;
+  margin-left:0px !important;
+  margin-bottom: 20px !important;
+  flex-grow: 1;
+}
+.ccms-site-name-list li {
+  width: 200px;
+  height: 200px;
+  padding: 30px !important;
+  margin: 0 30px 0 0 !important;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(176, 176, 176, 0.3); /* Add shadow */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  position: relative;
+  /* Gradient border */
+  border: 1px solid transparent;
+  background: linear-gradient(rgb(42, 42, 45), rgb(42, 42, 45)) padding-box, /* Background inside */
+              linear-gradient(45deg, #007bff, #ff4c4c) border-box; /* Gradient on border */
+  transition: all 0.3s ease-in-out;
+  color: rgb(255, 255, 255);
+}
+
+
+
+/* Hover effect */
+.ccms-site-name-list li:hover {
+  transform: scale(1.05); /* Slightly scale up on hover */
+  box-shadow: 0 4px 8px rgba(176, 176, 176, 0.3); /* Increase shadow on hover */
+  border-color: rgba(0, 123, 255, 0.7); /* Change border color on hover */
+}
+
+
+  .ccms-site-name-list li strong{
+   font-size: larger;
+   
+  }
+  .ccms-site-name-list li a{
+   text-decoration: none;
+   color: #8791ac;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    background-color: transparent; /* Initial color */
+    border-radius: 50%;
+    display: inline-block;
+    position: absolute;
+     /* Position it in relation to the li */
+    /* Adjust this value to position it correctly */
+    right: 10px; /* Adjust this value to position it correctly */
+    top:10px;
+  }
+  
+  
+  .ccms-site-name-list .button.btn-test-connection {
+    width: 80%;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 16px;
+    color: rgb(221, 221, 221); 
+    border: none; 
+    cursor: pointer; 
+    margin: 0px;
+  }
+
+/* table content list */
+.content-list-container {
+  margin-top: 20px;
+  padding: 20px; /* Overall padding for the content list container */
+  border: 1px solid transparent;
+  background: linear-gradient(rgb(37, 38, 40), rgb(37, 38, 40)) padding-box, /* Background inside */
+              linear-gradient(45deg, #007bff, #ff4c4c) border-box; /* Gradient on border */
+  transition: all 0.3s ease-in-out;
+  color: rgb(255, 255, 255);
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 4px rgba(233, 233, 233, 0.1); /* Shadow for depth */
+}
+
+.content-list-container:hover {
+  transform: scale(1.005); /* Slightly scale up on hover */
+  box-shadow: 0 4px 8px rgba(176, 176, 176, 0.3); /* Increase shadow on hover */
+  border-color: rgba(0, 123, 255, 0.7);
+}
+
+.content-list-container h2 {
+  margin-bottom: 20px; /* Space below the heading */
+  font-size: 24px; /* Heading size */
+  color: #ffffff; /* Darker color for better readability */
+}
+
+.table {
+  width: 100%; /* Full width */
+  border-collapse: collapse; /* Collapse borders for a clean look */
+}
+
+.table th, .table td {
+  padding: 12px; /* Padding for table cells */
+  border: 1px solid #e1e4e8 !important; /* Light border for cells */
+  text-align: left; /* Align text to the left */
+}
+
+.table th {
+  background-color: #f8f9fa; /* Light gray background for header */
+  color: #495057; /* Darker text for header */
+  font-weight: bold; /* Bold text for header */
+}
+
+.table tr:nth-child(even) {
+  background-color: #f2f2f2; /* Light background for even rows */
+}
+
+.table tr:hover {
+  background-color: #e9ecef; /* Highlight row on hover */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.table .send-action {
+  text-align: center; /* Center align action buttons/links */
+}
+
+/* Additional styles for buttons if applicable */
+.table .send-action a {
+  background-color: #007bff; /* Primary color for action button */
+  color: white; /* White text */
+  padding: 6px 12px; /* Padding for button */
+  border-radius: 4px; /* Rounded corners for buttons */
+  text-decoration: none; /* Remove underline */
+  transition: background-color 0.3s; /* Smooth transition for hover */
+}
+
+.table .send-action a:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+
+/* button */
+
+.dashboard-button {
+  margin-right: 10px;
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.buttons-container {
+  margin-bottom: 20px;
+}
+
+
+.view-all-box {
+  display: flex;
+   /* Align to the left to keep it in the same row */
+  align-items: center; /* Center vertically */
+  margin: 0 20px 0 0!important;
+}
+
+.view-all-button {
+  border: 1px solid transparent;
+  background: linear-gradient(rgb(42, 42, 45), rgb(42, 42, 45)) padding-box, /* Background inside */
+              linear-gradient(45deg, #007bff, #ff4c4c) border-box; /* Gradient on border */
+  transition: all 0.3s ease-in-out;
+  color: rgb(255, 255, 255);
+  text-decoration: none;
+  width: 60px;
+  height: 60px;
+  padding: 6px;
+  margin-bottom:13px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(190, 190, 190, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%; 
+  transform: scale(1.1);  
+}
+
+
+.view-all-button .arrow {
+  font-size: 40px;
+  color: #a5a5a5;
+  text-shadow: 0 5px 5px rgba(166, 165, 165, 0.3);
+  transition: transform 0.3s ease; /* Smooth transition for size and shadow */
+}
+
+.view-all-button:hover .arrow {
+  transform: scale(1.1); /* Increase size by 10% */
+   /* Add shadow on hover */
+}
+
+/* button */
+
+.dashboard-button {
+  margin-right: 10px;
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.buttons-container {
+  margin-bottom: 20px;
+}
+
+.ccms-site-dashboard-container {
+  padding: 20px;
+  background-color: #f9f9f9; /* Light background color */
+  border: 1px solid #ddd; /* Border around the container */
+  border-radius: 5px; /* Rounded corners */
+  margin-bottom: 20px;
+  display: flex; /* Space below the container */
+}
+

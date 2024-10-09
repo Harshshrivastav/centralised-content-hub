@@ -1,0 +1,7 @@
+config_sync.settings:
+  path: '/admin/config/system/content-sync'
+  defaults:
+    _form: '\Drupal\config_sync\Form\ConfigSync'
+    _title: 'Content Sync Configuration'
+  requirements:
+    _permission: 'administer site configuration'

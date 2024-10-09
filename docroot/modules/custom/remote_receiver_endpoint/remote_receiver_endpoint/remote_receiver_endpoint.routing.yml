@@ -1,0 +1,8 @@
+# remote_receiver_endpoint.receive_content:
+#   path: '/api/receive-content'
+#   defaults:
+#     _plugin: 'receive_content_resource'
+#   requirements:
+#     _permission: 'administer nodes'
+#     _format: 'json'
+#   methods: ['POST']

@@ -1,0 +1,9 @@
+name: 'Config Sync'
+type: module
+description: 'A custom module for syncing content types and taxonomy terms using checkboxes.'
+package: Custom
+core_version_requirement: ^10
+dependencies:
+  - taxonomy
+  - node
+  

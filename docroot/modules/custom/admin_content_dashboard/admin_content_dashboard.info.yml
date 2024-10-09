@@ -1,0 +1,10 @@
+name: 'Admin Content Dashboard'
+type: module
+description: 'Custom dashboard to send content via REST API to child sites.'
+core_version_requirement: ^10
+package: Custom
+dependencies:
+  - drupal:node
+  - drupal:rest
+  - drupal:user
+version: '1.0.0'

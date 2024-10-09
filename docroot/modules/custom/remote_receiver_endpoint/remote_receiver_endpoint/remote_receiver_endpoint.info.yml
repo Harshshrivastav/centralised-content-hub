@@ -1,0 +1,9 @@
+name: 'Remote Receiver Endpoint'
+type: module
+description: 'Receives content from parent site via REST API and creates nodes.'
+package: Custom
+core_version_requirement: ^10
+dependencies:
+  - node:node
+  - rest:rest
+  - drupal:media

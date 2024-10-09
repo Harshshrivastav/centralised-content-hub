@@ -1,0 +1,4 @@
+access admin content dashboard:
+  title: 'Access Admin Content Dashboard'
+  description: 'Permission to view the admin content dashboard.'
+  restrict access: TRUE

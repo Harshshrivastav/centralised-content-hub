@@ -1,0 +1,7 @@
+name: 'Child Test Connection Endpoint'
+type: module
+description: 'Provides an endpoint to test connection from the parent site.'
+core_version_requirement: ^9 || ^10
+package: Custom
+dependencies:
+  - rest:rest

@@ -1,0 +1,9 @@
+name: 'Site Dashboard'
+type: module
+description: 'Provides a dashboard to manage and create multi-site instances.'
+core_version_requirement: ^8 || ^9 || ^10
+package: Custom
+dependencies:
+  - drupal:system
+  - drupal:field
+

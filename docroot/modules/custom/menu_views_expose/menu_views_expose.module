@@ -1,0 +1,73 @@
+<?php
+/**
+ * Implements hook_views_data().
+ */
+function menu_views_expose_views_data() {
+  // Get the menu link content base table definition.
+  $data = [];
+
+  $data['menu_link_content_data']['table']['group'] = t('Menu links');
+  $data['menu_link_content_data']['table']['base'] = [
+    'field' => 'id',
+    'title' => t('Menu link content'),
+    'help' => t('Menu link content table used in menus.'),
+  ];
+
+  // Expose the fields.
+  $data['menu_link_content_data']['menu_name'] = [
+    'title' => t('Menu name'),
+    'help' => t('The name of the menu containing the link.'),
+    'field' => [
+      'id' => 'standard',
+    ],
+    'filter' => [
+      'id' => 'string',
+    ],
+  ];
+
+  $data['menu_link_content_data']['title'] = [
+    'title' => t('Title'),
+    'help' => t('The menu link title.'),
+    'field' => [
+      'id' => 'standard',
+    ],
+    'filter' => [
+      'id' => 'string',
+    ],
+  ];
+
+  $data['menu_link_content_data']['enabled'] = [
+    'title' => t('Enabled'),
+    'help' => t('Whether the menu link is enabled.'),
+    'field' => [
+      'id' => 'boolean',
+    ],
+    'filter' => [
+      'id' => 'boolean',
+    ],
+  ];
+
+  $data['menu_link_content_data']['workflow_state'] = [
+    'title' => t('Workflow State'),
+    'help' => t('The workflow moderation state of the menu link.'),
+    'field' => [
+      'id' => 'standard',
+    ],
+    'filter' => [
+      'id' => 'string',
+    ],
+  ];
+
+$data['menu_link_content_data']['id'] = [
+    'title' => t('Id'),
+    'help' => t('id for menu link.'),
+    'field' => [
+      'id' => 'standard',
+    ],
+    'filter' => [
+      'id' => 'integer',
+    ],
+];
+
+  return $data;
+}

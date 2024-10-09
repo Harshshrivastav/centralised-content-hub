@@ -1,0 +1,99 @@
+.site-dashboard-container {
+  display: flex;
+  flex-direction: column; /* Stack content vertically */
+  align-items: center; /* Center content horizontally */
+  justify-content: center; /* Center content vertically */
+  padding: 20px;
+  background-color: #f8f9fa; /* Light background */
+}
+
+.ccms-site-name-list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 6 columns grid */
+  gap: 20px; /* Space between grid items */
+  margin: 0;
+  padding: 0;
+  list-style-type: none; /* Remove bullet points */
+}
+
+.ccms-site-name-list li {
+  
+  width: 200px;
+  height: 200px;
+  padding: 30px !important;
+  margin: 0 20px 20px 0 !important;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(176, 176, 176, 0.3); /* Add shadow */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  position: relative;
+  /* Gradient border */
+  border: 1px solid transparent;
+  background: linear-gradient(rgb(42, 42, 45), rgb(42, 42, 45)) padding-box, /* Background inside */
+              linear-gradient(45deg, #007bff, #ff4c4c) border-box; /* Gradient on border */
+  transition: all 0.3s ease-in-out;
+  color: rgb(255, 255, 255);
+}
+
+.ccms-site-name-list li:hover {
+  transform: translateY(-5px); /* Lift on hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Bigger shadow on hover */
+}
+
+  .ccms-site-name-list li strong{
+   font-size: larger;
+   
+  }
+  .ccms-site-name-list li a{
+   text-decoration: none;
+   color: #8791ac;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    background-color: rgb(73, 73, 70); /* Initial color */
+    border-radius: 50%;
+    display: inline-block;
+    position: absolute;
+     /* Position it in relation to the li */
+    /* Adjust this value to position it correctly */
+    right: 10px; /* Adjust this value to position it correctly */
+    top:10px;
+  }
+  
+  
+  .ccms-site-name-list .button.btn-test-connection {
+    width: 80%;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 16px;
+    color: rgb(221, 221, 221); 
+    border: none; 
+    cursor: pointer; 
+    margin: 0px;
+  }
+
+
+.view-all-box {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.view-all-button {
+  padding: 12px 30px;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 30px;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s ease;
+}
+
+.view-all-button:hover {
+  background-color: #0056b3;
+}

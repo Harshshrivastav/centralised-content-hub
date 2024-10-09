@@ -1,0 +1,30 @@
+site_dashboard.dashboard_page:
+  path: '/dashboard'
+  defaults:
+    _controller: '\Drupal\site_dashboard\Controller\SiteDashboardController::dashboardPage'
+    _title: 'ContentHub Dashboard'
+  requirements:
+    _permission: 'access content'
+    
+
+site_dashboard.test_connection:
+  path: '/dashboard/{site_name}/test-connection'
+  defaults:
+    _controller: '\Drupal\site_dashboard\Controller\SiteDashboardController::testConnection'
+    _title: 'Test Connection'
+  requirements:
+    _permission: 'access admin content dashboard'
+  options:
+    parameters:
+      site_name:
+        type: string
+
+
+site_dashboard.view_all:
+  path: '/dashboard/view-all'
+  defaults:
+    _controller: '\Drupal\site_dashboard\Controller\SiteDashboardController::viewAllSites'
+    _title: 'All Sites'
+  requirements:
+    _permission: 'access content'
+

@@ -1,0 +1,8 @@
+name: 'Menu Views Expose'
+description: 'Expose Menu link content to Views.'
+core_version_requirement: ^10
+package: Custom
+type: module
+dependencies:
+  - drupal:views
+  - drupal:menu_ui

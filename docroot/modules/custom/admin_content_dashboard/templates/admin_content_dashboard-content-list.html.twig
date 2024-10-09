@@ -1,0 +1,30 @@
+<table>
+  <thead>
+    <tr>
+      <th>{{ 'Entity ID'|t }}</th>
+      <th>{{ 'Title'|t }}</th>
+      <th>{{ 'Author'|t }}</th>
+      <th>{{ 'Content Type'|t }}</th>  {# Added Content Type column #}
+      <th>{{ 'Date'|t }}</th>
+      <th>{{ 'Send to Remote Site'|t }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in data %}
+      <tr>
+        <td>{{ row.nid }}</td>
+        <td>{{ row.title }}</td>
+        <td>{{ row.author }}</td>
+        <td>{{ row.content_type }}</td>  {# Added row for content type #}
+        <td>{{ row.created }}</td>
+        <td>{{ row.send }}</td>
+      </tr>
+    {% else %}
+      <tr>
+        <td colspan="6">{{ 'No content available'|t }}</td>  {# Updated colspan to 6 #}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{{ pager }}

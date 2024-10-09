@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * @file
+ * Install functions for the Content Moderation Menu module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function content_moderation_menu_install() {
+  // Update the menu link content entity type during the installation.
+  $entity_type_manager = \Drupal::service('entity_type.manager');
+  $entity_definition_update_manager = \Drupal::service('entity.definition_update_manager');
+
+  // Get the entity definition for menu link content.
+  $entity_type = $entity_type_manager->getDefinition('menu_link_content');
+
+  // Update the entity type using the definition update manager.
+  $entity_definition_update_manager->updateEntityType($entity_type);
+}
