@@ -214,6 +214,11 @@ class MediaSyncController extends ControllerBase {
               'content_type' => 'media',
             ])
             ->execute();
+
+            // Optionally, you can remove the queue item if it's no longer needed.
+            \Drupal::database()->delete('synchronisation_queue')
+            ->condition('qid', $queue_item->qid)
+            ->execute();
         } else {
           \Drupal::messenger()->addError($this->t('Failed to push media to @site. Check logs for details.', ['@site' => $site['site_name']]));
         }
