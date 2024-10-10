@@ -1,10 +1,12 @@
+# Routing for Content Push
 admin_content_dashboard.content_list:
   path: '/admin/content/dashboard'
   defaults:
     _controller: '\Drupal\admin_content_dashboard\Controller\ContentListController::contentList'
     _title: 'Content List'
   requirements:
-    _permission: 'administer content'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessEditorContent'
+    
 
 admin_content_dashboard.send:
   path: '/admin/content/dashboard/send/{nid}/{langcode}'
@@ -12,17 +14,20 @@ admin_content_dashboard.send:
     _controller: '\Drupal\admin_content_dashboard\Controller\ContentListController::sendToRemote'
     _title: 'Send to Remote Site'
   requirements:
-    _permission: 'access admin content dashboard'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessAdminContent'
     nid: \d+
     langcode: '[a-zA-Z_-]+'
 
+
+# Routing For Queue of Synchronisation
 admin_content_dashboard.queue:
   path: '/admin/content-dashboard/queue'
   defaults:
     _controller: '\Drupal\admin_content_dashboard\Controller\ContentListController::queue'
     _title: 'Queue of Synchronisation'
   requirements:
-    _permission: 'administer nodes'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessAdminContent'
+
 
 admin_content_dashboard.queue_logs:
   path: '/admin/content/dashboard/queue/{qid}/logs'
@@ -30,17 +35,17 @@ admin_content_dashboard.queue_logs:
     _controller: '\Drupal\admin_content_dashboard\Controller\ContentListController::queueLogs'
     _title: 'Error Logs'
   requirements:
-    _permission: 'access admin content dashboard'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessAdminContent'
   options:
     _admin_route: TRUE
 
+# Routing for Push Types Content Media Menu Taxonomy
 custom_module.determine_push_type:
   path: '/admin/content/dashboard/push/{qid}'
   defaults:
     _controller: '\Drupal\admin_content_dashboard\Controller\ContentListController::determinePushType'
   requirements:
-    _permission: 'access content'
-
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessAdminContent'
 
 admin_content_dashboard.content_push:
   path: '/admin/content-dashboard/queue/content-push/{qid}'
@@ -48,7 +53,7 @@ admin_content_dashboard.content_push:
     _controller: '\Drupal\admin_content_dashboard\Controller\ContentListController::pushContent'
     _title: 'Push Content'
   requirements:
-    _permission: 'access admin content dashboard'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessAdminContent'
 
 admin_content_dashboard.media_push:
   path: '/admin/content-dashboard/queue/media-push/{qid}'
@@ -56,7 +61,7 @@ admin_content_dashboard.media_push:
     _controller: '\Drupal\admin_content_dashboard\Controller\MediaSyncController::pushMedia'
     _title: 'Push Media'
   requirements:
-    _permission: 'access admin content dashboard'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessAdminContent'
 
 admin_content_dashboard.menu_push:
   path: '/admin/content-dashboard/queue/Menu-push/{qid}'
@@ -64,7 +69,7 @@ admin_content_dashboard.menu_push:
     _controller: '\Drupal\admin_content_dashboard\Controller\MenuSyncController::pushMenu'
     _title: 'Push Menu'
   requirements:
-    _permission: 'access admin content dashboard'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessAdminContent'
 
 admin_content_dashboard.taxonomy_push:
   path: '/admin/content-dashboard/queue/Taxonomy-push/{qid}'
@@ -72,33 +77,35 @@ admin_content_dashboard.taxonomy_push:
     _controller: '\Drupal\admin_content_dashboard\Controller\TaxonomySyncController::pushTaxonomy'
     _title: 'Push Taxonomy'
   requirements:
-    _permission: 'access admin content dashboard'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessAdminContent'
 
-    
+
+# Routing for removing from queue
 admin_content_dashboard.queue_remove:
   path: '/admin/content-dashboard/queue/remove/{qid}'
   defaults:
     _controller: '\Drupal\admin_content_dashboard\Controller\ContentListController::removeQueueItem'
     _title: 'Remove Queue Item'
   requirements:
-    _permission: 'access admin content dashboard'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessAdminContent'
 
+# Routing for Relation of Synchronisation
 admin_content_dashboard.ros_list:
   path: '/admin/content-dashboard/relation-of-synchronisation'
   defaults:
     _controller: '\Drupal\admin_content_dashboard\Controller\ContentListController::relationOfSynchronisation'
     _title: 'Relation of Synchronisation'
   requirements:
-    _permission: 'administer content'
-    
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessAdminContent'
 
+# Routing for Menu listing
 admin_content_dashboard.menu_content_list:
   path: '/admin/content/menu-sync'
   defaults:
     _controller: '\Drupal\admin_content_dashboard\Controller\MenuSyncController::menuContentList'
     _title: 'Menu Content Synchronization'
   requirements:
-    _permission: 'administer menu'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessEditorContent'
 
 admin_content_dashboard.send_menu:
   path: '/admin/content/menu-sync/send/{id}'
@@ -106,7 +113,7 @@ admin_content_dashboard.send_menu:
     _controller: '\Drupal\admin_content_dashboard\Controller\MenuSyncController::sendToRemote'
     _title: 'Send Menu Link to Remote Site'
   requirements:
-    _permission: 'administer menu'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessAdminContent'
   options:
     parameters:
       id:
@@ -118,11 +125,12 @@ admin_content_dashboard.send_menu_post_request:
     _controller: '\Drupal\admin_content_dashboard\Controller\MenuSyncController::sendPostRequest'
     _title: 'Send Menu Link via POST'
   requirements:
-    _permission: 'administer menu'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessAdminContent'
   options:
     parameters:
       id:
         type: 'string'
+
 
 # Route to display taxonomy terms.
 admin_content_dashboard.taxonomy_list:
@@ -131,9 +139,10 @@ admin_content_dashboard.taxonomy_list:
     _controller: '\Drupal\admin_content_dashboard\Controller\TaxonomySyncController::taxonomyList'
     _title: 'Taxonomy Sync List'
   requirements:
-    _permission: 'administer taxonomy'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessEditorContent'
   options:
     _admin_route: TRUE
+
 
 # Route to add a taxonomy term to the queue.
 admin_content_dashboard.send_taxonomy:
@@ -142,9 +151,10 @@ admin_content_dashboard.send_taxonomy:
     _controller: '\Drupal\admin_content_dashboard\Controller\TaxonomySyncController::sendToRemote'
     _title: 'Queue Taxonomy Term'
   requirements:
-    _permission: 'administer taxonomy'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessAdminContent'
   options:
     _admin_route: TRUE
+
 
 # Route to send a taxonomy term to the remote site.
 admin_content_dashboard.send_taxonomy_to_remote:
@@ -153,10 +163,9 @@ admin_content_dashboard.send_taxonomy_to_remote:
     _controller: '\Drupal\admin_content_dashboard\Controller\TaxonomySyncController::sendPostRequest'
     _title: 'Send Taxonomy Term to Remote'
   requirements:
-    _permission: 'administer taxonomy'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessAdminContent'
   options:
     _admin_route: TRUE
-
 
 #new media
 admin_content_dashboard.media_list:
@@ -165,7 +174,7 @@ admin_content_dashboard.media_list:
     _controller: '\Drupal\admin_content_dashboard\Controller\MediaSyncController::mediaList'
     _title: 'Media Sync List'
   requirements:
-    _permission: 'access content'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessEditorContent'
 
 admin_content_dashboard.send_media:
   path: '/admin/content/media-sync/send/{mid}'
@@ -173,5 +182,5 @@ admin_content_dashboard.send_media:
     _controller: '\Drupal\admin_content_dashboard\Controller\MediaSyncController::sendToRemote'
     _title: 'Send Media to Remote'
   requirements:
-    _permission: 'access admin content dashboard'
+    _custom_access: 'admin_content_dashboard.custom_access_check::accessAdminContent'
     mid: \d+

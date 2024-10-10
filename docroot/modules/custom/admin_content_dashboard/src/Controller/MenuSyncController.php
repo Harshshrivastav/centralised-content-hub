@@ -49,9 +49,9 @@ class MenuSyncController extends ControllerBase {
 
     // Build the table header.
     $header = [
-      'id' => $this->t('Menu Link ID'),
-      'title' => $this->t('Link Title'),
-      'menu_name' => $this->t('Menu Name'),
+      'id' => $this->t('Menu ID'),
+      'title' => $this->t('Title'),
+      'menu_name' => $this->t('Menu Type'),
       'send' => $this->t('Schedule for Menu Sync'),
     ];
 
@@ -62,7 +62,7 @@ class MenuSyncController extends ControllerBase {
         'id' => $row->id,
         'title' => $row->title,
         'menu_name' => $row->menu_name,
-        'send' => Link::fromTextAndUrl($this->t('Schedule'), Url::fromRoute('admin_content_dashboard.send_menu', ['id' => $row->id])),
+        'send' => Link::fromTextAndUrl($this->t('Schedule for Menu Sync'), Url::fromRoute('admin_content_dashboard.send_menu', ['id' => $row->id])),
       ];
     }
 
@@ -239,7 +239,8 @@ class MenuSyncController extends ControllerBase {
               'remote_nid' => $remote_menu_link_id,
               'remote_site' => $remote_site_name,
               'operation_date' => time(),
-              'content_type' => 'menu',
+              'content_type' => 'link',
+              'entity_type' => 'menu',
             ])
             ->execute();
 

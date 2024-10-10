@@ -11,7 +11,7 @@ use GuzzleHttp\Exception\RequestException;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-
+use Drupal\media\Entity\Media;
 /**
  * Class ContentListController.
  *
@@ -82,8 +82,9 @@ class ContentListController extends ControllerBase {
     // Query to get the content along with the content type
     $query = Database::getConnection()->select('node_field_data', 'n')
       ->fields('n', ['nid', 'title', 'uid', 'created', 'type', 'langcode'])  // Added 'type' to select content type
+      ->orderBy('n.created', 'DESC')
       ->condition('status', 1);
-
+      
     // Execute the query and fetch results
     $results = $query->execute()->fetchAll();
 
@@ -543,7 +544,8 @@ public function serializeParagraph($paragraph) {
   
     // Fetch data from the queue table
     $query = Database::getConnection()->select('synchronisation_queue', 'q')
-      ->fields('q', ['qid', 'operation', 'nid', 'title', 'remote_site', 'created', 'status', 'entity_type', 'language']);  // Added entity_type and language
+      ->fields('q', ['qid', 'operation', 'nid', 'title', 'remote_site', 'created', 'status', 'entity_type', 'language'])
+      ->orderBy('qid', 'DESC');  // Added entity_type and language
     $results = $query->execute()->fetchAll();
   
     $rows = [];
@@ -552,7 +554,19 @@ public function serializeParagraph($paragraph) {
       $langcode = $row->language;  // Default to row language if node load fails.
 
       $node = \Drupal\node\Entity\Node::load($row->nid);
+      if($row->entity_type === 'content') {
       $content_type = $node ? $node->getType() : $row->entity_type;
+      }
+      elseif($row->entity_type === 'media') {
+        $media = Media::load($row->nid);
+        $content_type = $media ? $media->bundle() : $row->entity_type;
+      }
+      elseif($row->entity_type === 'menu') {
+        $content_type ='Menu';
+      }
+      else{
+        $content_type = 'Taxonomy';
+      }
 
       $rows[] = [
         'operation' => $row->operation,
@@ -666,7 +680,8 @@ public function serializeParagraph($paragraph) {
   
     // Fetch data from the 'relation_of_synchronisation' table
     $query = Database::getConnection()->select('relation_of_synchronisation', 'ros')
-      ->fields('ros', ['nid', 'title', 'remote_nid', 'content_type', 'entity_type', 'language', 'remote_site', 'operation_date']);  // Added entity_type and language
+      ->fields('ros', ['nid', 'title', 'remote_nid', 'content_type', 'entity_type', 'language', 'remote_site', 'operation_date'])
+      ->orderBy('operation_date', 'DESC');  // Added entity_type and language
     $results = $query->execute()->fetchAll();
   
     $rows = [];

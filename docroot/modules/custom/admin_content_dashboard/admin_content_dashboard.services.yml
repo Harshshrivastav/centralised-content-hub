@@ -1,0 +1,4 @@
+services:
+  admin_content_dashboard.custom_access_check:
+    class: Drupal\admin_content_dashboard\Access\CustomAccessCheck
+    arguments: ['@current_user']

@@ -36,16 +36,18 @@ class MediaSyncController extends ControllerBase {
    */
   public function mediaList() {
     $query = Database::getConnection()->select('media_field_data', 'mfd')
-      ->fields('mfd', ['mid', 'name', 'bundle']);
+      ->fields('mfd', ['mid', 'name', 'bundle','created'])
+      ->orderBy('mfd.created', 'DESC');
     
     $results = $query->execute()->fetchAll();
 
     // Build table header.
     $header = [
       'mid' => $this->t('Media ID'),
-      'name' => $this->t('Name'),
-      'type' => $this->t('Type'),
-      'send' => $this->t('Send to Remote'),
+      'name' => $this->t('Title'),
+      'type' => $this->t('Media Type'),
+      'created' => $this->t('Date'),
+      'send' => $this->t('Schedule For Media Sync'),
     ];
 
     // Build table rows.
@@ -55,7 +57,8 @@ class MediaSyncController extends ControllerBase {
         'mid' => $row->mid,
         'name' => $row->name,
         'type' => $row->bundle,
-        'send' => Link::fromTextAndUrl($this->t('Send'), Url::fromRoute('admin_content_dashboard.send_media', ['mid' => $row->mid])),
+        'created' => date('Y-m-d H:i:s', $row->created),
+        'send' => Link::fromTextAndUrl($this->t('Schedule For Media Sync'), Url::fromRoute('admin_content_dashboard.send_media', ['mid' => $row->mid])),
       ];
     }
 
@@ -322,7 +325,8 @@ class MediaSyncController extends ControllerBase {
               'remote_nid' => $remote_mid,
               'remote_site' => $remote_site_name,
               'operation_date' => time(),
-              'content_type' => 'media',
+              'content_type' => $bundle,
+              'entity_type' => 'media',
             ])
             ->execute();
 

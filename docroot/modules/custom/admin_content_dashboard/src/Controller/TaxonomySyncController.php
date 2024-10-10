@@ -49,9 +49,9 @@ class TaxonomySyncController extends ControllerBase {
 
     // Build the table header.
     $header = [
-      'tid' => $this->t('Taxonomy Term ID'),
-      'name' => $this->t('Name'),
-      'vocabulary' => $this->t('Vocabulary'),
+      'tid' => $this->t('Term ID'),
+      'name' => $this->t('Title'),
+      'vocabulary' => $this->t('Vocabulary Type'),
       'send' => $this->t('Schedule for Taxomomy Sync'),
     ];
 
@@ -62,7 +62,7 @@ class TaxonomySyncController extends ControllerBase {
         'tid' => $row->tid,
         'name' => $row->name,
         'vocabulary' => $row->vid,
-        'send' => Link::fromTextAndUrl($this->t('Schedule'), Url::fromRoute('admin_content_dashboard.send_taxonomy', ['tid' => $row->tid])),
+        'send' => Link::fromTextAndUrl($this->t('Schedule for Taxonomy Sync'), Url::fromRoute('admin_content_dashboard.send_taxonomy', ['tid' => $row->tid])),
       ];
     }
 
@@ -239,6 +239,7 @@ class TaxonomySyncController extends ControllerBase {
             'remote_site' => $remote_site_name,
             'operation_date' => time(),
             'content_type' => 'taxonomy',
+            'entity_type' => 'taxonomy_term',
           ])
           ->execute();
           return ['success' => true, 'remote_tid' => $responseData['remote_tid']];
